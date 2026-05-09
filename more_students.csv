@@ -1,0 +1,11 @@
+id,name,major,year,attendance_rate,midterm_score,behavioral_score,missed_assignments,office_hours_visited,previous_gpa
+STU-007,George Harris,Chemistry,Freshman,0.92,80.0,8.5,0,1,3.4
+STU-008,Hannah Martin,Economics,Sophomore,0.65,58.0,5.5,4,0,2.3
+STU-009,Ian Clark,Computer Science,Senior,0.88,85.0,7.0,1,3,3.6
+STU-010,Jessica Lee,Mathematics,Junior,0.97,95.0,9.0,0,5,4.0
+STU-011,Kevin White,Physics,Freshman,0.72,62.0,6.5,2,0,2.7
+STU-012,Laura Hall,Biology,Senior,0.80,70.0,7.0,1,2,3.0
+STU-013,Michael Young,Engineering,Sophomore,0.55,42.0,4.5,6,0,1.9
+STU-014,Nina King,Computer Science,Junior,0.91,88.0,8.5,0,1,3.5
+STU-015,Oscar Scott,Mathematics,Freshman,0.85,78.0,8.0,1,0,3.2
+STU-016,Rachel Adams,Economics,Senior,0.78,65.0,6.0,2,0,2.6
