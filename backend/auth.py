@@ -64,3 +64,8 @@ def get_current_user(request: Request, db: Session = Depends(database.get_db)):
         print(f"DEBUG AUTH: User with email {email} not found in database.")
         raise credentials_exception
     return user
+
+def get_current_hod(current_user: models.User = Depends(get_current_user)):
+    if current_user.role != models.RoleEnum.admin:
+        raise HTTPException(status_code=403, detail="Not enough privileges. HOD required.")
+    return current_user

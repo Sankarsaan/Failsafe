@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/api/register", response_model=schemas.Token)
+@app.post("/api/register")
 def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
@@ -34,14 +34,15 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
         name=user.name,
         email=user.email,
         hashed_password=hashed_password,
-        department=user.department
+        department=models.DepartmentEnum(user.department),
+        role=models.RoleEnum.faculty,
+        status=models.StatusEnum.pending
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     
-    access_token = auth.create_access_token(data={"sub": new_user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"message": "Registration submitted for HOD approval."}
 
 @app.post("/api/login", response_model=schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
@@ -52,9 +53,42 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+        
+    if user.status == models.StatusEnum.pending:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account pending HOD approval."
+        )
     
-    access_token = auth.create_access_token(data={"sub": user.email})
+    access_token = auth.create_access_token(data={
+        "sub": user.email,
+        "role": user.role.value,
+        "status": user.status.value,
+        "department": user.department.value
+    })
     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/api/admin/pending-faculty", response_model=List[schemas.UserResponse])
+def get_pending_faculty(current_hod: models.User = Depends(auth.get_current_hod), db: Session = Depends(database.get_db)):
+    pending_users = db.query(models.User).filter(
+        models.User.department == current_hod.department,
+        models.User.status == models.StatusEnum.pending,
+        models.User.role == models.RoleEnum.faculty
+    ).all()
+    return pending_users
+
+@app.post("/api/admin/approve-faculty/{user_id}")
+def approve_faculty(user_id: int, current_hod: models.User = Depends(auth.get_current_hod), db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if user.department != current_hod.department:
+        raise HTTPException(status_code=403, detail="Cannot approve faculty from another department")
+        
+    user.status = models.StatusEnum.approved
+    db.commit()
+    return {"message": f"User {user.email} approved successfully."}
 
 @app.get("/api/dashboard")
 def get_dashboard(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):

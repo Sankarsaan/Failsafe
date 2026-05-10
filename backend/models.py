@@ -1,8 +1,35 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import JSON
 import database
+import enum
+
 Base = database.Base
+
+class RoleEnum(str, enum.Enum):
+    admin = "admin"
+    faculty = "faculty"
+
+class StatusEnum(str, enum.Enum):
+    pending = "pending"
+    approved = "approved"
+
+class DepartmentEnum(str, enum.Enum):
+    cse = "cse"
+    mnc = "mnc"
+    dsai = "dsai"
+    mechanical = "mechanical"
+    chemical = "chemical"
+    civil = "civil"
+    electrical = "electrical"
+
+class Hod(Base):
+    __tablename__ = "hods"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, index=True)
+    hashed_password = Column(String(255))
+    department = Column(Enum(DepartmentEnum), unique=True) # Only one HOD per department
 
 class User(Base):
     __tablename__ = "users"
@@ -10,8 +37,10 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), index=True)
     email = Column(String(255), unique=True, index=True)
-    hashed_password = Column(String(255))
-    department = Column(String(255))
+    hashed_password = Column(String(255), nullable=True)
+    department = Column(Enum(DepartmentEnum))
+    role = Column(Enum(RoleEnum), default=RoleEnum.faculty)
+    status = Column(Enum(StatusEnum), default=StatusEnum.pending)
 
 class Student(Base):
     __tablename__ = "students"

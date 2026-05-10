@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,28 +24,60 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  department: z.string().min(1, { message: "Please select a department." }),
+  department: z.enum(["cse", "mnc", "dsai", "mechanical", "chemical", "civil", "electrical"], {
+    message: "Please select a valid department.",
+  }),
 });
 
 export default function RegisterPage() {
+  const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      department: "",
+      department: undefined as any,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setErrorMsg(null);
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
     formData.append("password", values.password);
     formData.append("department", values.department);
     
-    await registerAction(formData);
+    const res = await registerAction(formData);
+    if (res && res.error) {
+      setErrorMsg(res.error);
+    } else if (res && res.success) {
+      setSuccessMsg(res.message || "Registration submitted for HOD approval.");
+    }
+  }
+
+  if (successMsg) {
+    return (
+      <Card className="w-[450px] shadow-lg">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-green-100 rounded-full">
+              <ShieldCheck className="w-8 h-8 text-green-600" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tracking-tight">Registration Submitted</CardTitle>
+          <CardDescription className="mt-4">{successMsg}</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex justify-center mt-6">
+          <Link href="/login" className="text-primary hover:underline font-medium">
+            Return to Sign in
+          </Link>
+        </CardFooter>
+      </Card>
+    );
   }
 
   return (
@@ -59,6 +92,7 @@ export default function RegisterPage() {
         <CardDescription>Join FAILSAFE to identify and support at-risk students.</CardDescription>
       </CardHeader>
       <CardContent>
+        {errorMsg && <div className="text-red-500 text-sm mb-4 text-center">{errorMsg}</div>}
         <Form {...form}>
           <form action={() => form.handleSubmit(onSubmit)()} className="space-y-4">
             <FormField
@@ -113,10 +147,13 @@ export default function RegisterPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="computer_science">Computer Science</SelectItem>
-                      <SelectItem value="engineering">Engineering</SelectItem>
-                      <SelectItem value="mathematics">Mathematics</SelectItem>
-                      <SelectItem value="physics">Physics</SelectItem>
+                      <SelectItem value="cse">Computer Science & Engineering</SelectItem>
+                      <SelectItem value="mnc">Mathematics and Computing</SelectItem>
+                      <SelectItem value="dsai">Data Science & AI</SelectItem>
+                      <SelectItem value="mechanical">Mechanical Engineering</SelectItem>
+                      <SelectItem value="chemical">Chemical Engineering</SelectItem>
+                      <SelectItem value="civil">Civil Engineering</SelectItem>
+                      <SelectItem value="electrical">Electrical Engineering</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

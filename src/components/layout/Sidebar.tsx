@@ -9,7 +9,6 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/students", icon: Users, label: "Students" },
   { href: "/upload", icon: UploadCloud, label: "Upload Data" },
-  { href: "/interventions", icon: AlertCircle, label: "Interventions" },
 ];
 
 export function Sidebar() {
@@ -18,7 +17,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r min-h-screen flex flex-col hidden md:flex">
       <div className="h-16 flex items-center px-6 border-b font-bold text-xl text-primary tracking-tight">
-        FAILSAFE
+        <Link href="/profile" className="hover:opacity-80 transition-opacity">FAILSAFE</Link>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-1">
         {navItems.map((item) => {
