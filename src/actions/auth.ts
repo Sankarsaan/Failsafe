@@ -25,7 +25,8 @@ export async function loginAction(formData: FormData) {
     });
 
     if (!res.ok) {
-      return { error: "Invalid credentials or pending approval" };
+      const errorData = await res.json().catch(() => ({}));
+      return { error: errorData.detail || "Invalid credentials or pending approval" };
     }
 
     const data = await res.json();

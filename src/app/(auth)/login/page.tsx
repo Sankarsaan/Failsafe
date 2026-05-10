@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,12 +33,18 @@ export default function LoginPage() {
     },
   });
 
+  const [error, setError] = React.useState<string | null>(null);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setError(null);
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
     
-    await loginAction(formData);
+    const result = await loginAction(formData);
+    if (result && result.error) {
+      setError(result.error);
+    }
   }
 
   return (
@@ -52,6 +59,11 @@ export default function LoginPage() {
         <CardDescription>Enter your credentials to access the faculty portal.</CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="mb-4 p-3 rounded-md bg-destructive/10 text-destructive text-sm font-medium border border-destructive/20 text-center">
+            {error}
+          </div>
+        )}
         <Form {...form}>
           <form action={() => form.handleSubmit(onSubmit)()} className="space-y-4">
             <FormField
