@@ -92,17 +92,32 @@ def approve_faculty(user_id: int, current_hod: models.User = Depends(auth.get_cu
 
 @app.get("/api/dashboard")
 def get_dashboard(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
-    total_students = db.query(models.Student).count()
-    high_risk = db.query(models.RiskPrediction).filter(models.RiskPrediction.risk_level == "High").count()
+    dept = current_user.department.value
+    total_students = db.query(models.Student).filter(models.Student.major == dept).count()
+    
+    high_risk = db.query(models.RiskPrediction).join(models.Student).filter(
+        models.Student.major == dept,
+        models.RiskPrediction.risk_level == "High"
+    ).count()
     
     # Mock active interventions for now
     active_interventions = 8
     
     # Calculate Risk Distribution
+    moderate_risk = db.query(models.RiskPrediction).join(models.Student).filter(
+        models.Student.major == dept,
+        models.RiskPrediction.risk_level == "Moderate"
+    ).count()
+    
+    low_risk = db.query(models.RiskPrediction).join(models.Student).filter(
+        models.Student.major == dept,
+        models.RiskPrediction.risk_level == "Low"
+    ).count()
+    
     risk_distribution = [
         {"name": "High Risk", "value": high_risk, "color": "#ef4444"},
-        {"name": "Moderate Risk", "value": db.query(models.RiskPrediction).filter(models.RiskPrediction.risk_level == "Moderate").count(), "color": "#f59e0b"},
-        {"name": "Low Risk", "value": db.query(models.RiskPrediction).filter(models.RiskPrediction.risk_level == "Low").count(), "color": "#10b981"},
+        {"name": "Moderate Risk", "value": moderate_risk, "color": "#f59e0b"},
+        {"name": "Low Risk", "value": low_risk, "color": "#10b981"},
     ]
     
     # Mock trends
@@ -126,7 +141,8 @@ def get_dashboard(current_user: models.User = Depends(auth.get_current_user), db
 
 @app.get("/api/students")
 def get_students(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
-    students = db.query(models.Student).all()
+    dept = current_user.department.value
+    students = db.query(models.Student).filter(models.Student.major == dept).all()
     results = []
     for s in students:
         record = db.query(models.PerformanceRecord).filter(models.PerformanceRecord.student_id == s.id).first()
@@ -143,9 +159,13 @@ def get_students(current_user: models.User = Depends(auth.get_current_user), db:
 
 @app.get("/api/students/{id}")
 def get_student_detail(id: str, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
+    dept = current_user.department.value
     student = db.query(models.Student).filter(models.Student.id == id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
+        
+    if student.major != dept:
+        raise HTTPException(status_code=403, detail="Access denied. Student belongs to another department.")
         
     prediction = db.query(models.RiskPrediction).filter(models.RiskPrediction.student_id == id).first()
     
