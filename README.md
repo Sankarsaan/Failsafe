@@ -41,7 +41,7 @@ Faculty          →  Views Student Dashboard, Risk Levels, and Intervention Pla
 | Frontend | Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui |
 | Backend | FastAPI (Python), SQLAlchemy ORM |
 | Database | MySQL (via PyMySQL) |
-| ML Model | XGBoost Classifier + SHAP Explainability |
+| ML Model | Numpy, Pandas, Matplotlib, Scikit-learn, XGBoost Classifier, SHAP Explainability |
 | Auth | JWT (python-jose), bcrypt password hashing |
 
 ---
@@ -157,9 +157,13 @@ python seed_courses.py
 ```bash
 python train_model.py
 ```
-This downloads the UCI Student Performance dataset, trains the XGBoost model, and saves it as `por_student_model.pkl`.
+This downloads the UCI Student Performance dataset, performs feature engineering, trains the XGBoost model, and saves the required artifacts: `por_student_model.pkl`, `por_shap_explainer.pkl`, `por_feature_names.pkl`, and `por_X_test.pkl`.
 
 > **Note:** This only needs to be run once. Pre-trained model files (`*.pkl`) are included if already generated.
+
+> **Optional Analysis Scripts:**
+> - Run `python check_correlation.py` to view the Pearson correlation analysis used for feature engineering (reducing collinearity and boosting predictive power).
+> - Run `python plotting_pr_curve.py` to generate `por_pr_curve.png`, visualizing the Precision-Recall tradeoff used to select our optimized 0.25 High-Risk threshold.
 
 ---
 
@@ -199,8 +203,12 @@ Frontend runs at: **http://localhost:3000**
 
 ## How the ML Model Works
 
-### Training Data
-The model was trained on the **UCI Machine Learning Repository — Student Performance Dataset** (Portuguese language course, 649 students). Features were engineered from raw columns to create meaningful combined attributes.
+### Training Data & Feature Engineering
+The model was trained on the **UCI Machine Learning Repository — Student Performance Dataset** (Portuguese language course, 649 students). Based on correlation analysis (`check_correlation.py`), raw features with high collinearity were clubbed together to improve model stability and predictive power:
+- `Medu` + `Fedu` → `Pedu` (Total Parental Education)
+- `Mjob` + `Fjob` → `Pjob` (Total Parental Occupation Level)
+- `Dalc` + `Walc` → `Alc` (Total Alcohol Consumption)
+- `goout` + `freetime` → `unstructured_time` (Unstructured Free Time)
 
 ### Algorithm
 **XGBoost Classifier** in a scikit-learn Pipeline with:
@@ -217,7 +225,26 @@ The final grade (G3) determines the target class:
 | 10 ≤ G3 < 14 | **Moderate Risk** | 1 |
 | G3 ≥ 14 | **Low Risk** | 0 |
 
-> **Lowered Threshold:** A student is flagged **High Risk** if the model's confidence is > 25% (instead of the default 50%). This makes FAILSAFE more sensitive — it would rather flag a safe student than miss a truly at-risk one.
+> **Lowered Threshold (0.25):** The threshold for predicting **High Risk** was lowered to 25% instead of the default 50%. This value was derived using Precision-Recall curve analysis (`plotting_pr_curve.py`) to maximize recall. In an early-warning context, FAILSAFE prioritizes high sensitivity—it is better to over-flag a safe student than to miss a truly at-risk one.
+
+![Precision-Recall Curve for Threshold Selection](./por_pr_curve.png)
+
+### Model Performance & Cost-Sensitive Tradeoffs
+
+Because identifying at-risk students is the primary goal, the model is tuned for **Recall** on the High Risk class rather than raw accuracy. By adjusting the classification threshold, the model successfully catches **73% of truly High-Risk students**.
+
+```text
+COST-SENSITIVE LEARNING WITH THRESHOLD TUNING (~25%)
+               precision    recall  f1-score   support
+
+     Low Risk       0.60      0.66      0.63        44
+Moderate Risk       0.70      0.49      0.58        71
+    High Risk       0.34      0.73      0.47        15
+
+     accuracy                           0.58       130
+```
+
+> **Tradeoff Explained:** The precision for High Risk is `0.34`. This means out of all students flagged as High Risk, about 34% actually fail. While this introduces "false alarms" (over-flagging), the recall of `0.73` guarantees that nearly 3 out of 4 students who *will* fail are caught early. This is intentional: faculty intervention is cheap, but a student failing is expensive.
 
 ### SHAP Explainability
 After predicting, **SHAP (SHapley Additive exPlanations)** values are computed per student. SHAP answers: *"Which attributes pushed THIS student's risk score up?"*
