@@ -19,7 +19,6 @@ def train_and_save_model():
  
     if not os.path.exists("student.zip"):
         urllib.request.urlretrieve(url, "student.zip")
- 
     with zipfile.ZipFile("student.zip", 'r') as zip_ref:
         zip_ref.extractall("student_data")
  
@@ -31,7 +30,6 @@ def train_and_save_model():
     df['Alc'] = df['Dalc'] + df['Walc']
     df['unstructured_time'] = df['goout'] + df['freetime']
     df['sup_paid'] = df['schoolsup'] + "_" + df['paid']
- 
     df['absentness'] = df['absences']
     df['past_failures'] = df['failures']
     df['study_time'] = df['studytime']
@@ -42,15 +40,15 @@ def train_and_save_model():
         (df['G3'] >= 14)
     ]
     choices = [2, 1, 0] # High, Moderate, Low
+
     df['target'] = np.select(conditions, choices, default=0)
  
     categorical_features = ['famsup', 'higher', 'internet', 'address', 'activities', 'romantic', 'sup_paid']
     numeric_features = ['absentness', 'past_failures', 'study_time', 'health', 'Pjob', 'Pedu', 'famrel', 'Alc', 'unstructured_time']
- 
     features = categorical_features + numeric_features
+
     X = df[features]
     y = df['target']
- 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
  
     print("Setting up Pipeline...")
@@ -89,10 +87,8 @@ def train_and_save_model():
     print("Training XGBoost Pipeline with RandomizedSearchCV and Class Weights...")
     sample_weights = compute_sample_weight(class_weight='balanced', y=y_train)
     random_search.fit(X_train, y_train, classifier__sample_weight=sample_weights)
- 
     print(f"Best parameters found: {random_search.best_params_}")
     best_pipeline = random_search.best_estimator_
- 
     print("Evaluating Best Model with Custom Threshold (High Risk > 0.25)...")
     y_probs = best_pipeline.predict_proba(X_test)
  
@@ -105,7 +101,6 @@ def train_and_save_model():
                 y_pred_custom.append(1)
             else:
                 y_pred_custom.append(0)
- 
     print(classification_report(y_test, y_pred_custom, target_names=['Low Risk', 'Moderate Risk', 'High Risk']))
  
     print("Initializing SHAP explainer...")
