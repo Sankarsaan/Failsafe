@@ -137,13 +137,13 @@ python seed_db.py
 Default HOD credentials for each department:
 | Department | Email | Password |
 |---|---|---|
-| CSE | `hod.cse@university.edu` | `password123` |
-| MNC | `hod.mnc@university.edu` | `password123` |
-| DSAI | `hod.dsai@university.edu` | `password123` |
-| Electrical | `hod.electrical@university.edu` | `password123` |
-| Mechanical | `hod.mechanical@university.edu` | `password123` |
-| Chemical | `hod.chemical@university.edu` | `password123` |
-| Civil | `hod.civil@university.edu` | `password123` |
+| CSE | `hod_cse@failsafe.edu` | `password123` |
+| MNC | `hod_mnc@failsafe.edu` | `password123` |
+| DSAI | `hod_dsai@failsafe.edu` | `password123` |
+| Electrical | `hod_electrical@failsafe.edu` | `password123` |
+| Mechanical | `hod_mechanical@failsafe.edu` | `password123` |
+| Chemical | `hod_chemical@failsafe.edu` | `password123` |
+| Civil | `hod_civil@failsafe.edu` | `password123` |
 
 > ⚠️ **Change default passwords** before any production use.
 
