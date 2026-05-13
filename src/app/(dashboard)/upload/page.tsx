@@ -11,6 +11,7 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -30,6 +31,7 @@ export default function UploadPage() {
       if (droppedFile.type === "text/csv" || droppedFile.name.endsWith(".csv")) {
         setFile(droppedFile);
         setUploadStatus("idle");
+        setErrorMessage("");
       }
     }
   };
@@ -38,6 +40,7 @@ export default function UploadPage() {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
       setUploadStatus("idle");
+      setErrorMessage("");
     }
   };
 
@@ -45,11 +48,35 @@ export default function UploadPage() {
     if (!file) return;
 
     setUploadStatus("uploading");
-    
-    const formData = new FormData();
-    formData.append("file", file);
+    setErrorMessage("");
 
     try {
+      // Basic Frontend Validation
+      const text = await file.text();
+      const lines = text.split('\n').filter(line => line.trim() !== "");
+      if (lines.length > 0) {
+        const headers = lines[0].toLowerCase().split(',');
+        const courseIdIndex = headers.findIndex(h => h.trim() === 'course_id');
+        
+        if (courseIdIndex === -1) {
+          throw new Error("Missing 'course_id' column in the CSV headers.");
+        }
+        
+        if (lines.length > 1) {
+          const firstRow = lines[1].split(',');
+          if (firstRow.length > courseIdIndex) {
+            const firstCourseId = firstRow[courseIdIndex].trim();
+            const pattern = /^(cs|ma|ee|da|me|ce|cl)\d{3}$/i;
+            if (!pattern.test(firstCourseId)) {
+               throw new Error(`Invalid course format detected ('${firstCourseId}'). Must match department prefix (e.g. CS, MA, EE) followed by 3 digits (case-insensitive).`);
+            }
+          }
+        }
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
       const result = await uploadCSVAction(formData);
       
       if (result.error) {
@@ -58,8 +85,9 @@ export default function UploadPage() {
 
       setUploadStatus("success");
       setFile(null); // Clear after success
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setErrorMessage(error.message || "There was a problem processing your file.");
       setUploadStatus("error");
     }
   };
@@ -75,7 +103,7 @@ export default function UploadPage() {
         <CardHeader>
           <CardTitle>CSV Data Upload</CardTitle>
           <CardDescription>
-            Drag and drop your CSV file here, or click to browse. The file should include columns for ID, grades, and attendance.
+            Your CSV must contain a course_id column followed by student data. The Course ID must match your department prefix followed by 3 digits (e.g., CS201, cs201 — case-insensitive).
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -136,7 +164,7 @@ export default function UploadPage() {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Upload Failed</AlertTitle>
               <AlertDescription>
-                There was a problem processing your file. Please check the formatting and try again.
+                {errorMessage}
               </AlertDescription>
             </Alert>
           )}

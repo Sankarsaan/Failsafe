@@ -29,10 +29,20 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Check if faculty exists in course table
+    course_match = db.query(models.Course).filter(
+        models.Course.instructor_faculty_id == user.faculty_id,
+        models.Course.instructor_name == user.name
+    ).first()
+
+    if not course_match:
+        raise HTTPException(status_code=400, detail="Registration failed: Name and Faculty ID not found in assigned courses. Please contact the institute.")
+
     hashed_password = auth.get_password_hash(user.password)
     new_user = models.User(
         name=user.name,
         email=user.email,
+        faculty_id_str=user.faculty_id,
         hashed_password=hashed_password,
         department=models.DepartmentEnum(user.department),
         role=models.RoleEnum.faculty,
@@ -51,6 +61,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    if user.role != models.RoleEnum.admin and form_data.client_id and user.faculty_id_str != form_data.client_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect Faculty ID",
             headers={"WWW-Authenticate": "Bearer"},
         )
         
@@ -87,32 +104,41 @@ def approve_faculty(user_id: int, current_hod: models.User = Depends(auth.get_cu
         raise HTTPException(status_code=403, detail="Cannot approve faculty from another department")
         
     user.status = models.StatusEnum.approved
+    
+    # Map courses to this faculty
+    courses_to_update = db.query(models.Course).filter(
+        models.Course.instructor_faculty_id == user.faculty_id_str,
+        models.Course.instructor_name == user.name
+    ).all()
+    
+    for course in courses_to_update:
+        course.faculty_id = user.id
+
     db.commit()
-    return {"message": f"User {user.email} approved successfully."}
+    return {"message": f"User {user.email} approved successfully and assigned to {len(courses_to_update)} courses."}
 
 @app.get("/api/dashboard")
 def get_dashboard(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
-    dept = current_user.department.value
-    total_students = db.query(models.Student).filter(models.Student.major == dept).count()
+    user_courses = [c.course_id for c in current_user.courses]
     
-    high_risk = db.query(models.RiskPrediction).join(models.Student).filter(
-        models.Student.major == dept,
+    total_students = db.query(models.Takes.student_id).filter(models.Takes.course_id.in_(user_courses)).distinct().count()
+    
+    high_risk = db.query(models.RiskPrediction.student_id).join(models.Takes, models.Takes.student_id == models.RiskPrediction.student_id).filter(
+        models.Takes.course_id.in_(user_courses),
         models.RiskPrediction.risk_level == "High"
-    ).count()
+    ).distinct().count()
     
-    # Mock active interventions for now
     active_interventions = 8
     
-    # Calculate Risk Distribution
-    moderate_risk = db.query(models.RiskPrediction).join(models.Student).filter(
-        models.Student.major == dept,
+    moderate_risk = db.query(models.RiskPrediction.student_id).join(models.Takes, models.Takes.student_id == models.RiskPrediction.student_id).filter(
+        models.Takes.course_id.in_(user_courses),
         models.RiskPrediction.risk_level == "Moderate"
-    ).count()
+    ).distinct().count()
     
-    low_risk = db.query(models.RiskPrediction).join(models.Student).filter(
-        models.Student.major == dept,
+    low_risk = db.query(models.RiskPrediction.student_id).join(models.Takes, models.Takes.student_id == models.RiskPrediction.student_id).filter(
+        models.Takes.course_id.in_(user_courses),
         models.RiskPrediction.risk_level == "Low"
-    ).count()
+    ).distinct().count()
     
     risk_distribution = [
         {"name": "High Risk", "value": high_risk, "color": "#ef4444"},
@@ -120,7 +146,6 @@ def get_dashboard(current_user: models.User = Depends(auth.get_current_user), db
         {"name": "Low Risk", "value": low_risk, "color": "#10b981"},
     ]
     
-    # Mock trends
     trend_data = [
         {"name": "Week 1", "riskScore": 12},
         {"name": "Week 2", "riskScore": 15},
@@ -141,31 +166,65 @@ def get_dashboard(current_user: models.User = Depends(auth.get_current_user), db
 
 @app.get("/api/students")
 def get_students(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
-    dept = current_user.department.value
-    students = db.query(models.Student).filter(models.Student.major == dept).all()
+    courses = [c.course_id for c in current_user.courses]
+    students_with_courses = db.query(models.Student, models.Takes.course_id).join(models.Takes).filter(models.Takes.course_id.in_(courses)).all()
+    
     results = []
-    for s in students:
+    for s, course_id in students_with_courses:
         record = db.query(models.PerformanceRecord).filter(models.PerformanceRecord.student_id == s.id).first()
         prediction = db.query(models.RiskPrediction).filter(models.RiskPrediction.student_id == s.id).first()
         
         results.append({
             "id": s.id,
             "name": s.name,
-            "attendance": f"{int(record.performance_data.get('attendance_rate', 0) * 100)}%" if record and record.performance_data else "N/A",
-            "grade": "C" if record and record.performance_data and record.performance_data.get('midterm_score', 0) < 60 else "A", 
+            "courseId": course_id,
+            "absences": str(int(record.performance_data.get('absentness', 0))) if record and record.performance_data and record.performance_data.get('absentness') is not None else "N/A",
+            "pastFailures": str(int(record.performance_data.get('past_failures', 0))) if record and record.performance_data and record.performance_data.get('past_failures') is not None else "N/A", 
             "riskLevel": prediction.risk_level if prediction else "Unknown"
         })
     return results
 
+def format_feature_name(raw_name: str) -> str:
+    name = raw_name.replace("remainder__", "").replace("cat__", "")
+    mapping = {
+        "absentness": "Absences",
+        "past_failures": "Past Failures",
+        "study_time": "Study Time",
+        "health": "Health",
+        "Pjob": "Parents Job Status",
+        "Pedu": "Parents Education",
+        "famrel": "Family Relationship",
+        "Alc": "Alcohol Consumption",
+        "unstructured_time": "Free Time",
+        "famsup_yes": "Has Family Support",
+        "famsup_no": "No Family Support",
+        "higher_yes": "Wants Higher Education",
+        "higher_no": "No Higher Ed Goals",
+        "internet_yes": "Has Internet",
+        "internet_no": "No Internet",
+        "address_U": "Urban Address",
+        "address_R": "Rural Address",
+        "activities_yes": "Extracurriculars",
+        "activities_no": "No Extracurriculars",
+        "romantic_yes": "In Relationship",
+        "romantic_no": "Not In Relationship",
+        "sup_paid_yes_yes": "School & Paid Support",
+        "sup_paid_no_no": "No External Support",
+        "sup_paid_yes_no": "School Support Only",
+        "sup_paid_no_yes": "Paid Support Only"
+    }
+    return mapping.get(name, name.replace("_", " ").title())
+
 @app.get("/api/students/{id}")
 def get_student_detail(id: str, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
-    dept = current_user.department.value
     student = db.query(models.Student).filter(models.Student.id == id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
         
-    if student.major != dept:
-        raise HTTPException(status_code=403, detail="Access denied. Student belongs to another department.")
+    takes = db.query(models.Takes).filter(models.Takes.student_id == id).all()
+    user_courses = [c.course_id for c in current_user.courses]
+    if not any(t.course_id in user_courses for t in takes):
+        raise HTTPException(status_code=403, detail="Access denied. Student is not in any of your courses.")
         
     prediction = db.query(models.RiskPrediction).filter(models.RiskPrediction.student_id == id).first()
     
@@ -173,17 +232,22 @@ def get_student_detail(id: str, current_user: models.User = Depends(auth.get_cur
     if prediction and prediction.shap_summary:
         for feature, impact in prediction.shap_summary.items():
             color = "#ef4444" if impact > 0 else "#10b981" # Red if increases risk, Emerald if decreases
-            shap_data.append({"feature": feature, "impact": impact, "color": color})
+            clean_name = format_feature_name(feature)
+            shap_data.append({"feature": clean_name, "impact": impact, "color": color})
             
     return {
         "id": student.id,
         "name": student.name,
-        "major": student.major,
-        "year": student.year,
+        "roll_number": student.roll_number,
         "riskScore": int(prediction.risk_score * 100) if prediction else 0,
         "riskLevel": prediction.risk_level if prediction else "Unknown",
         "shapData": shap_data
     }
+
+@app.get("/api/my-courses")
+def get_my_courses(current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
+    courses = db.query(models.Course).filter(models.Course.faculty_id == current_user.id).all()
+    return [{"course_id": c.course_id, "course_name": c.course_name} for c in courses]
 
 @app.post("/api/upload")
 async def upload_data(file: UploadFile = File(...), current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(database.get_db)):
@@ -198,7 +262,11 @@ async def upload_data(file: UploadFile = File(...), current_user: models.User = 
         with open(temp_file_path, "wb") as f:
             f.write(await file.read())
             
-        process_csv(temp_file_path, db)
+        process_csv(temp_file_path, db, current_user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     finally:
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)

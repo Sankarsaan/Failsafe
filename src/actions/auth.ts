@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const facultyId = formData.get("faculty_id") as string | null;
 
   if (!email || !password) {
     return { error: "Missing required fields" };
@@ -21,6 +22,7 @@ export async function loginAction(formData: FormData) {
       body: new URLSearchParams({
         username: email,
         password: password,
+        ...(facultyId ? { client_id: facultyId } : {}),
       }),
     });
 
@@ -50,9 +52,7 @@ export async function loginAction(formData: FormData) {
     }).join(''));
     const payload = JSON.parse(jsonPayload);
     
-    if (payload.role === "admin") {
-      redirectUrl = "/admin/dashboard";
-    }
+    // Admins now go to /dashboard by default, same as faculty
   } catch (error) {
     return { error: "Failed to connect to backend" };
   }
@@ -65,9 +65,10 @@ export async function registerAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const department = formData.get("department") as string;
+  const facultyId = formData.get("faculty_id") as string;
 
-  if (!name || !email || !password || !department) {
-    return { error: "Missing required fields" };
+  if (!name || !email || !password || !department || !facultyId) {
+    return { error: "Missing required fields. Faculty ID is required." };
   }
 
   try {
@@ -81,11 +82,13 @@ export async function registerAction(formData: FormData) {
         email,
         password,
         department,
+        faculty_id: facultyId,
       }),
     });
 
     if (!res.ok) {
-      return { error: "Registration failed" };
+      const errorData = await res.json().catch(() => ({}));
+      return { error: errorData.detail || "Registration failed" };
     }
 
     const data = await res.json();

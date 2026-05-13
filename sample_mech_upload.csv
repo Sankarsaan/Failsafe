@@ -1,0 +1,16 @@
+id,name,roll_number,course_id,famsup,higher,internet,address,activities,romantic,sup_paid,absentness,past_failures,study_time,health,Pjob,Pedu,famrel,Alc,unstructured_time
+STU-02DEF7,Test Student 939,MECH-3626,me101,no,no,no,R,no,yes,no_no,2,0,3,5,2,4,5,1,2
+STU-28AC36,Test Student 389,MECH-4361,me405,yes,yes,yes,U,no,no,no_no,8,0,2,3,1,2,4,4,1
+STU-436EA5,Test Student 759,MECH-4815,me101,yes,no,no,R,no,yes,no_yes,10,0,3,4,0,4,4,2,3
+STU-E3AA5D,Test Student 487,MECH-8593,me405,yes,no,yes,U,yes,yes,no_yes,9,1,2,3,1,4,1,2,2
+STU-C6BD3C,Test Student 185,MECH-8439,me101,yes,yes,yes,U,no,no,no_no,2,0,4,4,4,3,3,5,4
+STU-27DDC5,Test Student 468,MECH-9431,me405,yes,no,yes,U,yes,yes,no_yes,28,2,1,2,3,2,5,4,5
+STU-6AD426,Test Student 505,MECH-7121,me405,no,yes,yes,R,no,no,no_yes,6,0,2,4,0,4,3,1,2
+STU-05BF83,Test Student 841,MECH-2744,me101,no,yes,no,U,yes,no,yes_no,24,3,2,1,2,4,1,3,4
+STU-C386ED,Test Student 245,MECH-4131,me405,no,yes,yes,U,yes,no,no_no,30,3,1,3,4,2,5,3,4
+STU-6C442F,Test Student 461,MECH-4838,me101,no,no,yes,U,no,yes,no_no,2,0,4,4,2,1,5,1,4
+STU-20D7EF,Test Student 109,MECH-6236,me405,yes,yes,no,U,no,yes,no_no,1,0,4,4,4,3,3,1,5
+STU-96CEE8,Test Student 107,MECH-3374,me405,yes,no,no,R,yes,no,no_yes,1,0,4,5,0,2,5,2,4
+STU-9A244B,Test Student 814,MECH-6713,me101,no,yes,yes,U,yes,yes,yes_no,9,1,3,3,2,4,1,5,2
+STU-6E5175,Test Student 378,MECH-4816,me405,no,yes,no,U,yes,yes,yes_no,4,1,3,3,2,4,5,1,2
+STU-844B71,Test Student 983,MECH-6473,me101,yes,yes,no,R,no,no,no_no,24,3,1,1,3,4,3,1,4

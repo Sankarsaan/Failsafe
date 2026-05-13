@@ -1,0 +1,21 @@
+id,name,roll_number,course_id,famsup,higher,internet,address,activities,romantic,sup_paid,absentness,past_failures,study_time,health,Pjob,Pedu,famrel,Alc,unstructured_time
+STU-CS201-001,Aarav Sharma,22CS001,CS201,yes,yes,yes,U,yes,no,yes_no,4,0,3,4,3,4,4,1,3
+STU-CS201-002,Priya Mehta,22CS002,CS201,no,yes,yes,U,no,no,no_no,6,1,2,3,2,3,3,2,4
+STU-CS201-003,Rohan Gupta,22CS003,CS201,yes,yes,yes,R,yes,yes,yes_yes,2,0,4,5,4,4,5,1,2
+STU-CS201-004,Sneha Patel,22CS004,CS201,no,yes,no,U,no,no,no_no,14,2,1,2,1,2,2,3,5
+STU-CS201-005,Vikram Singh,22CS005,CS201,yes,yes,yes,U,yes,no,yes_no,3,0,3,4,3,3,4,1,3
+STU-CS201-006,Ananya Nair,22CS006,CS201,no,no,yes,R,no,yes,no_yes,18,3,1,1,1,1,2,4,5
+STU-CS201-007,Karan Joshi,22CS007,CS201,yes,yes,yes,U,yes,no,no_no,1,0,4,5,4,4,5,1,2
+STU-CS201-008,Divya Rao,22CS008,CS201,no,yes,yes,U,no,no,yes_no,8,1,2,3,2,2,3,2,4
+STU-CS201-009,Arjun Verma,22CS009,CS201,yes,yes,no,R,yes,yes,no_no,5,0,3,4,3,3,4,1,3
+STU-CS201-010,Kavya Iyer,22CS010,CS201,yes,yes,yes,U,no,no,yes_yes,2,0,4,5,4,4,5,1,2
+STU-CS201-011,Siddharth Bose,22CS011,CS201,no,no,no,R,no,yes,no_no,20,3,1,1,1,1,1,5,5
+STU-CS201-012,Meera Pillai,22CS012,CS201,yes,yes,yes,U,yes,no,yes_no,4,0,3,4,3,4,4,1,3
+STU-CS201-013,Nikhil Desai,22CS013,CS201,no,yes,yes,U,no,no,no_no,9,1,2,3,2,3,3,2,4
+STU-CS201-014,Pooja Reddy,22CS014,CS201,yes,yes,yes,U,yes,no,yes_yes,1,0,4,5,4,4,5,1,2
+STU-CS201-015,Rahul Kumar,22CS015,CS201,no,no,no,R,no,yes,no_no,16,2,1,2,1,2,2,4,5
+STU-CS201-016,Shruti Agarwal,22CS016,CS201,yes,yes,yes,U,yes,yes,yes_no,3,0,3,4,3,3,4,1,3
+STU-CS201-017,Aditya Tiwari,22CS017,CS201,no,yes,yes,U,no,no,no_no,7,1,2,3,2,2,3,2,4
+STU-CS201-018,Nandini Das,22CS018,CS201,yes,yes,yes,R,yes,no,yes_yes,2,0,4,5,4,4,5,1,2
+STU-CS201-019,Harsh Malhotra,22CS019,CS201,no,no,no,U,no,yes,no_no,22,3,1,1,1,1,1,5,5
+STU-CS201-020,Priyanka Sinha,22CS020,CS201,yes,yes,yes,U,yes,no,yes_no,4,0,3,4,3,4,4,1,3

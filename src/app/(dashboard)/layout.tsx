@@ -22,17 +22,17 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
-  let user = { email: "Unknown", department: "Unknown" };
+  let user = { email: "Unknown", department: "Unknown", role: "faculty" };
   if (token) {
     const payload = decodeJwt(token);
     if (payload) {
-      user = { email: payload.sub, department: payload.department };
+      user = { email: payload.sub, department: payload.department, role: payload.role };
     }
   }
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <Sidebar />
+      <Sidebar role={user.role} />
       <div className="flex-1 flex flex-col">
         <Header user={user} />
         <main className="flex-1 p-6 overflow-auto">

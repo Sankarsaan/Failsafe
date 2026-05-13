@@ -1,0 +1,16 @@
+id,name,roll_number,course_id,famsup,higher,internet,address,activities,romantic,sup_paid,absentness,past_failures,study_time,health,Pjob,Pedu,famrel,Alc,unstructured_time
+STU-C9714C,Test Student 622,CSE-7962,cs101,yes,yes,no,U,yes,yes,yes_no,6,1,3,3,0,2,5,2,2
+STU-809512,Test Student 788,CSE-6575,cs205,no,no,yes,R,yes,yes,yes_no,2,0,3,5,0,4,3,3,5
+STU-13FF3F,Test Student 553,CSE-7956,cs101,no,no,no,U,yes,yes,yes_no,2,0,3,5,1,4,5,3,4
+STU-005136,Test Student 896,CSE-4852,cs301,yes,yes,yes,U,no,yes,yes_no,0,0,4,5,2,0,1,5,3
+STU-E9B66D,Test Student 680,CSE-6090,cs205,no,yes,yes,U,yes,no,no_no,22,2,1,1,0,4,4,4,4
+STU-6A5194,Test Student 295,CSE-8770,cs301,yes,yes,yes,U,no,yes,no_no,1,0,3,4,0,0,4,1,3
+STU-35F706,Test Student 671,CSE-8746,cs101,yes,yes,yes,R,yes,no,yes_no,30,3,2,1,3,3,5,1,1
+STU-8BA61F,Test Student 933,CSE-6373,cs205,no,yes,yes,U,no,no,yes_yes,2,0,4,5,0,1,3,5,3
+STU-C3CD1E,Test Student 543,CSE-5611,cs301,no,no,no,R,no,no,yes_yes,2,0,4,4,3,4,5,3,5
+STU-8A6654,Test Student 314,CSE-3924,cs101,yes,yes,no,R,no,yes,no_yes,18,2,1,1,3,0,2,1,3
+STU-DC5036,Test Student 366,CSE-7797,cs101,no,no,no,R,yes,no,no_no,6,1,2,4,1,4,5,2,1
+STU-5EDDDD,Test Student 435,CSE-5578,cs301,no,yes,no,U,no,no,no_no,10,1,3,4,1,2,2,3,3
+STU-3218BB,Test Student 158,CSE-6018,cs301,yes,no,no,U,no,yes,yes_no,5,1,2,4,4,3,2,5,5
+STU-26CB38,Test Student 882,CSE-6249,cs301,no,no,yes,R,no,yes,yes_yes,0,0,4,4,0,1,1,5,3
+STU-9F08B3,Test Student 840,CSE-4126,cs205,yes,no,no,U,yes,yes,yes_no,19,2,2,1,2,2,3,2,4

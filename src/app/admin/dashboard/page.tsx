@@ -73,9 +73,14 @@ export default async function AdminDashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight">HOD Admin Portal</h1>
           <p className="text-muted-foreground mt-2">Manage faculty access and department resources.</p>
         </div>
-        <form action={logoutAction}>
-          <Button type="submit" variant="outline">Log out</Button>
-        </form>
+        <div className="flex gap-4">
+          <Button variant="default" asChild>
+            <a href="/dashboard">Faculty Dashboard</a>
+          </Button>
+          <form action={logoutAction}>
+            <Button type="submit" variant="outline">Log out</Button>
+          </form>
+        </div>
       </div>
 
       <Card>

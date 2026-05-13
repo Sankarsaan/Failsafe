@@ -2,17 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, UploadCloud, AlertCircle, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, UploadCloud, AlertCircle, LogOut, ShieldAlert } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
 
-const navItems = [
+const baseNavItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/students", icon: Users, label: "Students" },
   { href: "/upload", icon: UploadCloud, label: "Upload Data" },
 ];
 
-export function Sidebar() {
+export function Sidebar({ role }: { role?: string }) {
   const pathname = usePathname();
+
+  const navItems = [...baseNavItems];
+  if (role === "admin") {
+    navItems.push({ href: "/admin/dashboard", icon: ShieldAlert, label: "HOD Portal" });
+  }
 
   return (
     <aside className="w-64 bg-white border-r min-h-screen flex flex-col hidden md:flex">

@@ -6,12 +6,14 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     department: str
+    faculty_id: str
 
 class UserResponse(BaseModel):
     id: int
     name: str
     email: EmailStr
     department: str
+    faculty_id_str: Optional[str] = None
     role: str
     status: str
     class Config:
@@ -24,8 +26,7 @@ class Token(BaseModel):
 class StudentBase(BaseModel):
     id: str
     name: str
-    major: str
-    year: str
+    roll_number: Optional[str] = None
 
 class StudentResponse(StudentBase):
     class Config:

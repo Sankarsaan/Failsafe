@@ -23,6 +23,7 @@ import { ShieldCheck } from "lucide-react";
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
+  faculty_id: z.string().min(3, { message: "Faculty ID must be at least 3 characters." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   department: z.enum(["cse", "mnc", "dsai", "mechanical", "chemical", "civil", "electrical"], {
     message: "Please select a valid department.",
@@ -38,8 +39,9 @@ export default function RegisterPage() {
     defaultValues: {
       name: "",
       email: "",
+      faculty_id: "",
       password: "",
-      department: undefined as any,
+      department: "" as any,
     },
   });
 
@@ -48,6 +50,7 @@ export default function RegisterPage() {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
+    formData.append("faculty_id", values.faculty_id);
     formData.append("password", values.password);
     formData.append("department", values.department);
     
@@ -94,7 +97,7 @@ export default function RegisterPage() {
       <CardContent>
         {errorMsg && <div className="text-red-500 text-sm mb-4 text-center">{errorMsg}</div>}
         <Form {...form}>
-          <form action={() => form.handleSubmit(onSubmit)()} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -102,7 +105,7 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Dr. Jane Smith" {...field} />
+                    <Input placeholder="Dr. FirstName MiddleName LastName" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,7 +118,20 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="faculty@university.edu" {...field} />
+                    <Input placeholder="faculty@failsafe.edu" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="faculty_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Faculty ID</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. FAC-CSE-001" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -140,7 +156,7 @@ export default function RegisterPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Department</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a department" />

@@ -22,6 +22,7 @@ import { ShieldCheck } from "lucide-react";
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  faculty_id: z.string().optional(),
 });
 
 export default function LoginPage() {
@@ -30,6 +31,7 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
+      faculty_id: "",
     },
   });
 
@@ -40,7 +42,10 @@ export default function LoginPage() {
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
-    
+    if (values.faculty_id) {
+      formData.append("faculty_id", values.faculty_id);
+    }
+
     const result = await loginAction(formData);
     if (result && result.error) {
       setError(result.error);
@@ -48,7 +53,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-[400px] shadow-lg">
+    <Card className="w-[420px] shadow-lg">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-primary/10 rounded-full">
@@ -65,7 +70,7 @@ export default function LoginPage() {
           </div>
         )}
         <Form {...form}>
-          <form action={() => form.handleSubmit(onSubmit)()} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="email"
@@ -74,6 +79,22 @@ export default function LoginPage() {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="*@iitg.ac.in" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="faculty_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Faculty ID{" "}
+                    <span className="text-muted-foreground text-xs">(Faculty only — leave blank if HOD)</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. FAC-CSE-001" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,7 +119,7 @@ export default function LoginPage() {
       </CardContent>
       <CardFooter className="flex justify-center text-sm text-muted-foreground">
         <p>
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-primary hover:underline font-medium">
             Register here
           </Link>

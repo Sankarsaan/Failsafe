@@ -8,27 +8,35 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function StudentsPage() {
   const [studentsData, setStudentsData] = useState<any[]>([]);
+  const [myCourses, setMyCourses] = useState<{ course_id: string; course_name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState<string>("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStudents() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/students");
-        if (res.ok) {
-          const data = await res.json();
-          setStudentsData(data);
+        const [studentsRes, coursesRes] = await Promise.all([
+          fetch("/api/students"),
+          fetch("/api/my-courses"),
+        ]);
+        if (studentsRes.ok) {
+          setStudentsData(await studentsRes.json());
+        }
+        if (coursesRes.ok) {
+          setMyCourses(await coursesRes.json());
         }
       } catch (error) {
-        console.error("Failed to fetch students data:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchStudents();
+    fetchData();
   }, []);
 
   const getRiskBadge = (risk: string) => {
@@ -51,15 +59,31 @@ export default function StudentsPage() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Student Roster</h1>
           <p className="text-muted-foreground mt-1">View and manage all students in your courses.</p>
         </div>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search by name or ID..."
-            className="pl-8 bg-white"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+            <SelectTrigger className="w-full sm:w-[220px] bg-white">
+              <SelectValue placeholder="All Courses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Courses</SelectItem>
+              {myCourses.map((course) => (
+                <SelectItem key={course.course_id} value={course.course_id}>
+                  {course.course_id} — {course.course_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search by name or ID..."
+              className="pl-8 bg-white"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -77,24 +101,28 @@ export default function StudentsPage() {
                 <TableRow>
                   <TableHead>Student Name</TableHead>
                   <TableHead>Student ID</TableHead>
-                  <TableHead>Attendance</TableHead>
-                  <TableHead>Current Grade</TableHead>
+                  <TableHead>Course ID</TableHead>
+                  <TableHead>Absences</TableHead>
+                  <TableHead>Past Failures</TableHead>
                   <TableHead>Risk Level</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {studentsData
+                  .filter((student) => selectedCourse === "all" || student.courseId === selectedCourse)
                   .filter((student) => 
                     student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    student.id.toLowerCase().includes(searchQuery.toLowerCase())
+                    student.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (student.courseId && student.courseId.toLowerCase().includes(searchQuery.toLowerCase()))
                   )
-                  .map((student) => (
-                  <TableRow key={student.id}>
+                  .map((student, index) => (
+                  <TableRow key={`${student.id}-${index}`}>
                     <TableCell className="font-medium">{student.name}</TableCell>
                     <TableCell>{student.id}</TableCell>
-                    <TableCell>{student.attendance}</TableCell>
-                    <TableCell>{student.grade}</TableCell>
+                    <TableCell>{student.courseId}</TableCell>
+                    <TableCell>{student.absences}</TableCell>
+                    <TableCell>{student.pastFailures}</TableCell>
                     <TableCell>{getRiskBadge(student.riskLevel)}</TableCell>
                     <TableCell className="text-right">
                       <Link href={`/students/${student.id}`}>

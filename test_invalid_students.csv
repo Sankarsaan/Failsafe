@@ -1,0 +1,11 @@
+id,name,roll_number,course_id,famsup,higher,internet,address,activities,romantic,sup_paid,absentness,past_failures,study_time,health,Pjob,Pedu,famrel,Alc,unstructured_time
+STU-000,Student 0,CSE-000,me201,no,yes,yes,U,yes,no,no_no,2,0,2,3,1,2,3,2,4
+STU-001,Student 1,CSE-001,me201,no,yes,yes,U,yes,no,no_no,2,0,2,3,1,2,3,2,4
+STU-002,Student 2,CSE-002,me201,no,yes,yes,U,yes,no,no_no,0,0,2,3,1,2,3,2,4
+STU-003,Student 3,CSE-003,me201,no,yes,yes,U,yes,no,no_no,2,0,2,3,1,2,3,2,4
+STU-004,Student 4,CSE-004,me201,no,yes,yes,U,yes,no,no_no,10,0,2,3,1,2,3,2,4
+STU-005,Student 5,CSE-005,me201,no,yes,yes,U,yes,no,no_no,9,0,2,3,1,2,3,2,4
+STU-006,Student 6,CSE-006,me201,no,yes,yes,U,yes,no,no_no,1,0,2,3,1,2,3,2,4
+STU-007,Student 7,CSE-007,me201,no,yes,yes,U,yes,no,no_no,9,0,2,3,1,2,3,2,4
+STU-008,Student 8,CSE-008,me201,no,yes,yes,U,yes,no,no_no,2,0,2,3,1,2,3,2,4
+STU-009,Student 9,CSE-009,me201,no,yes,yes,U,yes,no,no_no,7,0,2,3,1,2,3,2,4
