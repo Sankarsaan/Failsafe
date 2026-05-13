@@ -43,7 +43,7 @@ def seed():
     ]
 
     for dept in departments:
-        email = f"hod.{dept.value}@university.edu"
+        email = f"hod_{dept.value}@failsafe.edu"
         existing_hod = db.query(User).filter(User.email == email).first()
         
         if not existing_hod:
