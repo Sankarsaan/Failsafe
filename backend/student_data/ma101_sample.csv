@@ -1,0 +1,6 @@
+id,name,roll_number,course_id,famsup,higher,internet,address,activities,romantic,sup_paid,absentness,past_failures,study_time,health,Pjob,Pedu,famrel,Alc,unstructured_time
+STU-MA101-001,Ishaan Sharma,22MA001,MA101,yes,yes,yes,U,yes,no,no_no,2,0,4,5,4,6,5,2,4
+STU-MA101-002,Ananya Gupta,22MA002,MA101,yes,yes,yes,U,no,yes,yes_no,8,0,2,4,3,4,4,3,6
+STU-MA101-003,Rahul Verma,22MA003,MA101,no,no,no,R,no,no,no_no,18,2,1,2,1,2,2,8,9
+STU-MA101-004,Sanya Malhotra,22MA004,MA101,yes,yes,yes,U,yes,no,yes_yes,1,0,3,5,5,7,5,2,3
+STU-MA101-005,Vikram Singh,22MA005,MA101,no,yes,no,R,no,yes,no_yes,12,1,2,3,2,3,3,6,7
