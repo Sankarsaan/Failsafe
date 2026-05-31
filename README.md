@@ -6,16 +6,19 @@
 
 ## 📑 Table of Contents
 1. [System Overview](#system-overview)
-2. [Tech Stack](#tech-stack)
-3. [Prerequisites](#prerequisites)
-4. [MySQL Database Setup](#mysql-database-setup)
-5. [Backend Setup](#backend-setup)
-6. [Frontend Setup](#frontend-setup)
-7. [Running the Application](#running-the-application)
-8. [How the ML Model Works](#how-the-ml-model-works)
-9. [Faculty Usage Guide](#faculty-usage-guide)
-10. [CSV Upload Guide — Attribute Reference](#csv-upload-guide--attribute-reference)
-11. [Faculty ID & Course Reference](#faculty-id--course-reference)
+2. [Application Previews & Walkthrough](#-application-previews--walkthrough)
+3. [Tech Stack](#tech-stack)
+4. [Prerequisites](#prerequisites)
+5. [MySQL Database Setup](#mysql-database-setup)
+6. [Backend Setup](#backend-setup)
+7. [Frontend Setup](#frontend-setup)
+8. [Running the Application](#running-the-application)
+9. [How the ML Model Works](#how-the-ml-model-works)
+10. [Faculty Usage Guide](#faculty-usage-guide)
+11. [CSV Upload Guide — Attribute Reference](#csv-upload-guide--attribute-reference)
+12. [Faculty ID & Course Reference](#faculty-id--course-reference)
+13. [Professional Resume Highlights](#-professional-resume-highlights)
+14. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -31,6 +34,46 @@ Faculty          →  Uploads student CSVs for their assigned courses
 System           →  Runs ML predictions + SHAP explanations
 Faculty          →  Views Student Dashboard, Risk Levels, and Intervention Plans
 ```
+
+---
+
+## 🖥️ Application Previews & Walkthrough
+
+Here is a visual walk-through of FAILSAFE's comprehensive role-based workflow, from secure authentication to HOD verification and advanced predictive analysis:
+
+### 🔑 Authentication & Onboarding
+Secure registration and login screens enforce role-based access for Faculty and HODs, validating Faculty IDs against pre-registered university course lists.
+
+| Faculty & HOD Registration | Secure Sign-In Portal |
+| :---: | :---: |
+| ![Faculty & HOD Registration](./public/WebsiteImages/register.png) | ![Login Screen](./public/WebsiteImages/signin.png) |
+
+---
+
+### 👔 Head of Department (HOD) Workflows
+Department HODs are equipped with administrative panels to verify, approve, or reject newly registered faculty. Once approved, the faculty member's assigned courses are dynamically linked to their account.
+
+| HOD Pending Approvals Manager | HOD Departmental Dashboard |
+| :---: | :---: |
+| ![HOD Approval Workflow](./public/WebsiteImages/hodadmin.png) | ![HOD Dashboard Overview](./public/WebsiteImages/hoddashboard.png) |
+
+---
+
+### 📚 Faculty Dashboards & Data Ingestion
+Faculty can manage their courses and perform fast, bulk student data ingestion via a drag-and-drop CSV upload portal, which automatically runs validation logic.
+
+| Faculty Home Dashboard | Bulk Student Data Upload (CSV) |
+| :---: | :---: |
+| ![Faculty Homepage](./public/WebsiteImages/dashboardfaculty.png) | ![CSV Upload Portal](./public/WebsiteImages/csvupload.png) |
+
+---
+
+### 📈 Predictive Analytics & Explainable AI (SHAP)
+Upon CSV upload, the machine learning pipeline predicts failure risks and immediately computes SHAP values. Faculty can search, filter, and drill down into individual student profiles to view visual feature impact charts and tailored academic intervention plans.
+
+| At-Risk Student Directory | Individual Explainable AI Dashboard |
+| :---: | :---: |
+| ![Filterable Student Risk List](./public/WebsiteImages/studentsdashboard.png) | ![SHAP Explanations & Intervention Plans](./public/WebsiteImages/individual%20student.png) |
 
 ---
 
@@ -419,6 +462,24 @@ Faculty must use their **Faculty ID** when registering and logging in. Contact y
 | FAC-CIV-002 | Dr. Seema Agarwal | Civil | CL201, CL202 |
 | FAC-CIV-003 | Dr. Vinod Pandey | Civil | CL301, CL302 |
 | FAC-CIV-004 | Dr. Sudha Krishnaswamy | Civil | CL401, CL402 |
+
+---
+
+## 💼 Professional Resume Highlights
+
+Integrating this project onto your resume? Here are high-impact, professionally crafted bullet points tailored for software engineering, full-stack development, and data science/ML roles:
+
+### 🛠️ For Full-Stack & Software Engineering Roles
+* **Full-Stack Role-Based Platform**: Designed and engineered a production-ready educational early-warning web application using **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS (shadcn/ui)**, **FastAPI (Python)**, and **MySQL (SQLAlchemy ORM)**.
+* **Granular Role-Based Access Control**: Implemented secure multi-tenant authentication using **JWT (JSON Web Tokens)** and **bcrypt** password hashing, building distinct workflows and state-managed dashboards for Institute Admins, HODs, and Faculty.
+* **Validated Bulk Ingestion Pipelines**: Developed automated CSV upload and parsing utilities equipped with cross-referenced database validation (e.g., matching Faculty IDs and dynamic Course mappings), ensuring 100% data integrity before running ML inference.
+* **Modular Service Architecture**: Structured high-performance backend endpoints in FastAPI with clean database separation, utilizing PyMySQL connection pooling and declarative schema migrations for reliable scaling.
+
+### 📊 For Data Science & Machine Learning Roles
+* **Early-Warning Predictive Modeling**: Designed and deployed a robust machine learning classification pipeline using **XGBoost** to identify academically at-risk students, engineered on the UCI Student Performance repository.
+* **Explainable AI (XAI) Integration**: Integrated **SHAP (SHapley Additive exPlanations)** to compute local feature attributions in real-time, displaying custom visual horizontal bar charts to faculty that clarify exactly which personal, socioeconomic, or academic factors drove each student's risk profile.
+* **Cost-Sensitive Optimization**: Engineered custom correlation and Precision-Recall analyses (`plotting_pr_curve.py`) to reduce multi-collinearity and optimize the classification decision boundary. Lowered the High-Risk threshold to **0.25** to achieve a **73% Recall**, prioritizing sensitivity to catch struggling students early.
+* **Dynamic Prescriptive Interventions**: Built a rule-based heuristics engine mapping top positive SHAP impact metrics directly to tailored, actionable academic intervention strategies (e.g., scheduling tutoring, counseling, or study groups) shown to faculty in real-time.
 
 ---
 
