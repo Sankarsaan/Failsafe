@@ -463,25 +463,7 @@ Faculty must use their **Faculty ID** when registering and logging in. Contact y
 | FAC-CIV-003 | Dr. Vinod Pandey | Civil | CL301, CL302 |
 | FAC-CIV-004 | Dr. Sudha Krishnaswamy | Civil | CL401, CL402 |
 
----
 
-## 💼 Professional Resume Highlights
-
-Integrating this project onto your resume? Here are high-impact, professionally crafted bullet points tailored for software engineering, full-stack development, and data science/ML roles:
-
-### 🛠️ For Full-Stack & Software Engineering Roles
-* **Full-Stack Role-Based Platform**: Designed and engineered a production-ready educational early-warning web application using **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS (shadcn/ui)**, **FastAPI (Python)**, and **MySQL (SQLAlchemy ORM)**.
-* **Granular Role-Based Access Control**: Implemented secure multi-tenant authentication using **JWT (JSON Web Tokens)** and **bcrypt** password hashing, building distinct workflows and state-managed dashboards for Institute Admins, HODs, and Faculty.
-* **Validated Bulk Ingestion Pipelines**: Developed automated CSV upload and parsing utilities equipped with cross-referenced database validation (e.g., matching Faculty IDs and dynamic Course mappings), ensuring 100% data integrity before running ML inference.
-* **Modular Service Architecture**: Structured high-performance backend endpoints in FastAPI with clean database separation, utilizing PyMySQL connection pooling and declarative schema migrations for reliable scaling.
-
-### 📊 For Data Science & Machine Learning Roles
-* **Early-Warning Predictive Modeling**: Designed and deployed a robust machine learning classification pipeline using **XGBoost** to identify academically at-risk students, engineered on the UCI Student Performance repository.
-* **Explainable AI (XAI) Integration**: Integrated **SHAP (SHapley Additive exPlanations)** to compute local feature attributions in real-time, displaying custom visual horizontal bar charts to faculty that clarify exactly which personal, socioeconomic, or academic factors drove each student's risk profile.
-* **Cost-Sensitive Optimization**: Engineered custom correlation and Precision-Recall analyses (`plotting_pr_curve.py`) to reduce multi-collinearity and optimize the classification decision boundary. Lowered the High-Risk threshold to **0.25** to achieve a **73% Recall**, prioritizing sensitivity to catch struggling students early.
-* **Dynamic Prescriptive Interventions**: Built a rule-based heuristics engine mapping top positive SHAP impact metrics directly to tailored, actionable academic intervention strategies (e.g., scheduling tutoring, counseling, or study groups) shown to faculty in real-time.
-
----
 
 ## Troubleshooting
 
